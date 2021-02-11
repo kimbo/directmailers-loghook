@@ -1,0 +1,4 @@
+/examples/basic/basic
+*.env
+/.vscode
+*.bak
