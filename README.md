@@ -46,7 +46,7 @@ func main() {
 			Zip:          "12345",
 		},
 		To: api.RecipientDetails{
-			Name:         "The White House",
+			Name:         "The White House", // why not send you logs to the President?
 			AddressLine1: "1600 Pennsylvania Ave",
 			AddressLine2: "",
 			City:         "Washington",
@@ -71,3 +71,7 @@ func main() {
 
 - Improve default template for letters and postcards (right now it's just `<p>log message goes here</p>`)
 - Clean way to use custom templates
+
+# Limitations
+
+I don't know this for sure, but I suspect directmailers only will send mail in the United States of America.
