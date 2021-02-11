@@ -2,7 +2,7 @@
 
 Have you ever wanted to get a postcard in the mail the last time your program crashed?
 
-This is a hook for [logrus](https://github.com/sirupsen/logrus) that will send your logs to you (or some other address of your choosing) as a letter or post card in the mail.
+This is a hook for [logrus](https://github.com/sirupsen/logrus) that will send your logs to you (or some other address of your choosing) in a letter or post card in the mail.
 
 # Requirements
 
