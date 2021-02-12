@@ -17,7 +17,7 @@ func DefaultLetter() api.LetterRequest {
 		BlankFirstPage:  false,
 		PostalClass:     "First Class",
 		VariablePayload: nil,
-		Data:            "",
+		Data:            letterDefault,
 	}
 }
 
@@ -28,8 +28,8 @@ func DefaultPostcard() api.PostcardRequest {
 		DryRun:          true, // dryrun by default to avoid costing $$
 		WaitForRender:   true,
 		VariablePayload: nil,
-		Front:           "",
-		Back:            "",
+		Front:           postcardDefaultFront,
+		Back:            postcardDefaultBack,
 	}
 }
 
@@ -47,67 +47,76 @@ type Config struct {
 	MailType              MailType
 	DirectmailersUsername string
 	DirectmailersPassword string
+	DryRun                bool
 }
 
 func New(username, password string, config Config) *DirectMailerHook {
-	return &DirectMailerHook{
+	h := &DirectMailerHook{
 		api:      api.New(username, password),
 		Letter:   DefaultLetter(),
 		Postcard: DefaultPostcard(),
-		Config:   config,
+		config:   config,
 	}
+	h.Letter.To = h.config.To
+	h.Letter.From = h.config.From
+	h.Letter.DryRun = h.config.DryRun
+	h.Postcard.To = h.config.To
+	h.Postcard.From = h.config.From
+	h.Postcard.DryRun = h.config.DryRun
+	return h
 }
 
 type DirectMailerHook struct {
-	Config   Config
+	config   Config
 	api      *api.API
 	Letter   api.LetterRequest
 	Postcard api.PostcardRequest
 }
 
 func (h *DirectMailerHook) fireLetter(entry *logrus.Entry) error {
-	s, err := entry.String()
+	logMsg, err := entry.String()
 	if err != nil {
 		return err
 	}
-	h.Letter.Data = fmt.Sprintf("<p>%s</p>", s)
-	h.Letter.To = h.Config.To
-	h.Letter.From = h.Config.From
+	h.Letter.VariablePayload = map[string]string{
+		"appName":       h.config.From.Name,
+		"recipientName": h.config.To.Name,
+		"logMessage":    logMsg,
+	}
 	lres, err := h.api.CreateLetter(h.Letter)
 	if err != nil {
 		return err
 	}
-	// TODO: remove this or print .RenderedPdf?
-	fmt.Printf("%#v\n", lres)
+	fmt.Printf("Rendered PDF: %v\n", lres.RenderedPdf)
 	return nil
 }
 
 func (h *DirectMailerHook) firePostcard(entry *logrus.Entry) error {
-	h.Postcard.Front = "<p>logrus directmailer hook wishes you the best of luck with your logs!</p>"
-	s, err := entry.String()
+	logMsg, err := entry.String()
 	if err != nil {
 		return err
 	}
-	h.Postcard.Back = fmt.Sprintf("<p>%s</p>", s)
-	h.Postcard.To = h.Config.To
-	h.Postcard.From = h.Config.From
+	h.Postcard.VariablePayload = map[string]string{
+		"appName":       h.config.From.Name,
+		"recipientName": h.config.To.Name,
+		"logMessage":    logMsg,
+	}
 	pres, err := h.api.CreatePostcard(h.Postcard)
 	if err != nil {
 		return err
 	}
-	// TODO: remove this or print .RenderedPdf?
-	fmt.Printf("%#v\n", pres)
+	fmt.Printf("Rendered PDF: %v\n", pres.RenderedPdf)
 	return nil
 }
 
 func (h *DirectMailerHook) Fire(entry *logrus.Entry) error {
-	if entry.Level > h.Config.MaxLevel {
+	if entry.Level > h.config.MaxLevel {
 		return nil
 	}
-	if h.Config.MailType == Letter {
+	if h.config.MailType == Letter {
 		return h.fireLetter(entry)
 	}
-	if h.Config.MailType == Postcard {
+	if h.config.MailType == Postcard {
 		return h.firePostcard(entry)
 	}
 	// do nothing

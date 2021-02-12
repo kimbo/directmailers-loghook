@@ -13,15 +13,15 @@ type SenderDetails RecipientDetails
 
 // https://jsapi.apiary.io/apis/directmailers/reference/letter/create-letter/create-letter.html
 type LetterRequest struct {
-	Description     string              // Friendly object description.
-	Size            string              // Size of postcard to be mailed. Allowed values are '8.5x11' and '8.5x14'
-	Duplex          bool                // Set to true to enable two sided printing.
-	DryRun          bool                // Set to true for testing. This will suppress printing and mailing and will result in no unit cost.
-	WaitForRender   bool                // Set to true to disable asynchronous thumbnail rendering. Useful for forcing the API to not respond until all thumbnails and renders are available.
-	BlankFirstPage  bool                // Set to true to insert a blank first page.
-	PostalClass     string              // Mail class of letter to be sent. Allowed values are 'First Class' and 'Marketing Mail'
-	Data            string              // Creative to be used for the letter. Value must be either a HTML Template id, public PDF URL, or HTML string less than 30,000 characters
-	VariablePayload []map[string]string // Key Value Array with variable names and values to replace in front and back object data HTML string or HTML Template
+	Description     string            // Friendly object description.
+	Size            string            // Size of postcard to be mailed. Allowed values are '8.5x11' and '8.5x14'
+	Duplex          bool              // Set to true to enable two sided printing.
+	DryRun          bool              // Set to true for testing. This will suppress printing and mailing and will result in no unit cost.
+	WaitForRender   bool              // Set to true to disable asynchronous thumbnail rendering. Useful for forcing the API to not respond until all thumbnails and renders are available.
+	BlankFirstPage  bool              // Set to true to insert a blank first page.
+	PostalClass     string            // Mail class of letter to be sent. Allowed values are 'First Class' and 'Marketing Mail'
+	Data            string            // Creative to be used for the letter. Value must be either a HTML Template id, public PDF URL, or HTML string less than 30,000 characters
+	VariablePayload map[string]string // Key Value Array with variable names and values to replace in front and back object data HTML string or HTML Template
 	To              RecipientDetails
 	From            SenderDetails
 }
@@ -31,7 +31,7 @@ type PostcardRequest struct {
 	Size            string // Size of postcard to be mailed. Allowed values are '4.25x6'
 	Front           string // Creative to be used for the front (address side) of the postcard. Value must be either a HTML Template id, public PDF or Image URL, or HTML string less than 30,000 characters
 	Back            string // Creative to be used for the back (non address side) of the postcard. Value must be either a HTML Template id, public PDF or Image URL, or HTML string less than 30,000 characters
-	VariablePayload []map[string]string
+	VariablePayload map[string]string
 	DryRun          bool
 	WaitForRender   bool
 	To              RecipientDetails
@@ -47,7 +47,7 @@ type LetterResponse struct {
 	Description     string `json:"Description"`
 	Medium          string `json:"Medium"`
 	Size            string `json:"Size"`
-	VariablePayload map[string]string
+	VariablePayload interface{}
 	To              RecipientDetails
 	From            SenderDetails
 	Cost            float64 `json:"Cost"`
@@ -89,7 +89,7 @@ type PostcardResponse struct {
 	Size            string `json:"Size"`
 	Front           string `json:"Front"`
 	Back            string `json:"Back"`
-	VariablePayload map[string]string
+	VariablePayload interface{}
 	Cost            float64 `json:"Cost"`
 	DryRun          bool    `json:"DryRun"`
 	RenderedPdf     string  `json:"RenderedPdf"`

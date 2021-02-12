@@ -31,10 +31,12 @@ import (
 )
 
 func main() {
+    // get these at https://dashboard.directmailers.com/settings
 	user := os.Getenv("DIRECTMAILER_USERNAME")
 	pass := os.Getenv("DIRECTMAILER_PASSWORD")
 
 	h := hook.New(user, pass, hook.Config{
+		DryRun: true,
 		MaxLevel: logrus.ErrorLevel,
 		MailType: hook.Postcard, // or hook.Letter
 		From: api.SenderDetails{

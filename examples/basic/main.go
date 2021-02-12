@@ -17,10 +17,11 @@ func main() {
 	pass := os.Getenv("DIRECTMAILER_PASSWORD")
 
 	h := hook.New(user, pass, hook.Config{
+		DryRun:   true, // set this to false to actually send a postcard/letter
 		MaxLevel: logrus.ErrorLevel,
-		MailType: hook.Postcard, // or hook.Letter
+		MailType: hook.Letter, // or hook.Letter
 		From: api.SenderDetails{
-			Name:         "my-application",
+			Name:         "my-application", // make this the name of your app
 			AddressLine1: "123 N 456 W",
 			AddressLine2: "Apt 789",
 			City:         "San Francisco",
@@ -28,7 +29,7 @@ func main() {
 			Zip:          "12345",
 		},
 		To: api.RecipientDetails{
-			Name:         "The White House",
+			Name:         "White House",
 			AddressLine1: "1600 Pennsylvania Ave",
 			AddressLine2: "",
 			City:         "Washington",
@@ -43,7 +44,7 @@ func main() {
 	}
 
 	if err := doSomething(); err != nil {
-		// that's another $0.56, errors get expensive quickly
-		logrus.Errorf("Oh no, we have a problem: %v", err)
+		// errors get expensive quickly
+		logrus.WithFields(logrus.Fields{"color": "blue", "reason": "who knows", "width": "5cm"}).Errorf("Oh no, we have a problem: %v", err)
 	}
 }
